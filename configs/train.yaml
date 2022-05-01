@@ -1,0 +1,15 @@
+# @package _global_
+
+# specify here default training configuration
+defaults:
+  - _self_
+  - datamodule: gi_tract.yaml
+  - callbacks: default.yaml
+  - model: gi_tract_seg.yaml
+  - trainer: default.yaml
+  - logger: neptune.yaml
+  - log_dir: default.yaml
+work_dir: ${hydra:runtime.cwd}
+print_config: True
+seed: 0
+name: "default"

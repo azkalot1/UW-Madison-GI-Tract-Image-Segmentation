@@ -1,0 +1,9 @@
+_target_: pytorch_lightning.Trainer
+gpus: 1
+min_epochs: 1
+max_epochs: 20
+num_sanity_val_steps: 0
+resume_from_checkpoint: null
+benchmark: True
+precision: 16
+deterministic: True

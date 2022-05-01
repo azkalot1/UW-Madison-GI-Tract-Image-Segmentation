@@ -1,0 +1,9 @@
+_target_: gi_tract_seg.data.datamodule.GITractDataModule
+
+data_path: ${work_dir}/data/processed/train_df_agg.parquet
+images_path: ${work_dir}/data/raw/train/
+masks_path: ${work_dir}/data/processed/masks/
+val_fold: 0
+batch_size: 8
+num_workers: 4
+pin_memory: True

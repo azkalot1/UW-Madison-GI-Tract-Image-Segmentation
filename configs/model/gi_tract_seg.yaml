@@ -1,0 +1,10 @@
+_target_: gi_tract_seg.models.module.GITractSegmentatonLitModule
+optimizer_name: AdaBelief
+lr_scheduler_name: ReduceLROnPlateau
+lr_scheduler_monitor: 'val/loss_epoch'
+
+net:
+  _target_: segmentation_models_pytorch.unet.Unet
+  encoder_name: resnet18
+  in_channels: 1
+  classes: 3

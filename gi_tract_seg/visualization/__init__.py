@@ -1,1 +1,1 @@
-from .utils import load_img, show_img
+from .utils import show_img

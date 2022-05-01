@@ -110,8 +110,10 @@ def merge_ids(df):
     df = df.drop(columns=["segmentation", "class"])
     df = df.groupby(["id"]).head(1).reset_index(drop=True)
     df = df.merge(df2, on=["id"])
-    df["labels"] = df["segmentation"].apply(lambda x: 1 - pd.isna(x).astype(int))
-    df["empty"] = df["labels"].apply(lambda x: (np.array(x) == 0).all().astype(int))
+    df["labels"] =\
+        df["segmentation"].apply(lambda x: 1 - pd.isna(x).astype(int))
+    df["empty"] =\
+        df["labels"].apply(lambda x: (np.array(x) == 0).all().astype(int))
 
     return df
 
@@ -127,3 +129,14 @@ def create_folds(df, n_splits, random_seed):
         df.loc[val_idx, "fold"] = fold
 
     return df
+
+
+def load_img(path):
+    img = cv2.imread(path, cv2.IMREAD_UNCHANGED)
+    img = img.astype("float32")  # original is uint16
+    min_val = img.min()
+    max_val = img.max()
+    img = (img - min_val) / (max_val - min_val)  # scale image to [0, 1]
+    img = img * 255.0  # scale image to [0, 255]
+    img = img.astype("uint8")
+    return img
