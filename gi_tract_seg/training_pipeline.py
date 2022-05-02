@@ -1,10 +1,7 @@
-import os
-from typing import Optional, List
+from typing import Optional
 import hydra
 from omegaconf import DictConfig
 from pytorch_lightning import (
-    Callback,
-    LightningDataModule,
     LightningModule,
     Trainer,
     seed_everything,
@@ -12,6 +9,7 @@ from pytorch_lightning import (
 
 
 from gi_tract_seg import utils
+
 log = utils.get_logger(__name__)
 
 
@@ -49,10 +47,7 @@ def train(config: DictConfig) -> Optional[float]:
     # Init lightning trainer
     log.info(f"Instantiating trainer <{config.trainer._target_}>")
     trainer: Trainer = hydra.utils.instantiate(
-        config.trainer,
-        callbacks=callbacks,
-        logger=logger,
-        _convert_="partial"
+        config.trainer, callbacks=callbacks, logger=logger, _convert_="partial"
     )
 
     # Send some parameters from config to all lightning loggers
@@ -63,7 +58,19 @@ def train(config: DictConfig) -> Optional[float]:
         datamodule=datamodule,
         trainer=trainer,
         callbacks=callbacks,
-        logger=logger
+        logger=logger,
     )
 
+    log.info("Starting training!")
     trainer.fit(model=model, datamodule=datamodule)
+    log.info("Finalizing!")
+
+    utils.finish(
+        config=config,
+        model=model,
+        datamodule=datamodule,
+        trainer=trainer,
+        callbacks=callbacks,
+        logger=logger,
+    )
+    log.info(f"Best model ckpt at {trainer.checkpoint_callback.best_model_path}")
