@@ -64,13 +64,4 @@ def train(config: DictConfig) -> Optional[float]:
     log.info("Starting training!")
     trainer.fit(model=model, datamodule=datamodule)
     log.info("Finalizing!")
-
-    utils.finish(
-        config=config,
-        model=model,
-        datamodule=datamodule,
-        trainer=trainer,
-        callbacks=callbacks,
-        logger=logger,
-    )
     log.info(f"Best model ckpt at {trainer.checkpoint_callback.best_model_path}")
