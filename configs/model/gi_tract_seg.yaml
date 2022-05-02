@@ -1,10 +1,17 @@
 _target_: gi_tract_seg.models.module.GITractSegmentatonLitModule
 optimizer_name: AdaBelief
 lr_scheduler_name: ReduceLROnPlateau
-lr_scheduler_monitor: 'val/loss_epoch'
-
+lr_scheduler_monitor: 'val/loss'
 net:
   _target_: segmentation_models_pytorch.unet.Unet
   encoder_name: resnet18
   in_channels: 1
   classes: 3
+criterion:
+  _target_: gi_tract_seg.models.losses.joint_loss.JointLoss
+  weights: [0.5, 0.5]
+  first:
+    _target_: segmentation_models_pytorch.losses.TverskyLoss
+    mode: multilabel
+  second:
+    _target_: segmentation_models_pytorch.losses.SoftBCEWithLogitsLoss

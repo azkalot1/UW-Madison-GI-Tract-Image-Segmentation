@@ -1,1 +1,1 @@
-from gi_tract_seg.models import module
+from gi_tract_seg.models import module, losses, metrics

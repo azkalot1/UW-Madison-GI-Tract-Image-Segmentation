@@ -13,7 +13,8 @@ class GITractDataset(Dataset):
         data: pd.DataFrame,
         images_path: str,
         masks_path: str,
-            transforms: Optional[int] = None):
+        transforms: Optional[int] = None,
+    ):
         self.data = data
         self.transforms = transforms
         self.images_path = images_path
@@ -39,24 +40,18 @@ class GITractDataset(Dataset):
     def _get_after_transform(self, image, mask):
         if self.transforms is not None:
             augmented = self.transforms(image=image, mask=mask)
-            image = augmented['image']
-            mask = augmented['mask']
+            image = augmented["image"]
+            mask = augmented["mask"]
         return image, mask
 
     def __getitem__(self, idx):
         """Will load the mask, get random coordinates around/with the mask,
         load the image by coordinates
         """
-        image_path = path_join(
-            self.images_path,
-            self.data.image_path.values[idx]
-            )
+        image_path = path_join(self.images_path, self.data.image_path.values[idx])
         image = self._load_image(image_path)
 
-        mask_path = path_join(
-            self.masks_path,
-            self.data.mask_path.values[idx]
-        )
+        mask_path = path_join(self.masks_path, self.data.mask_path.values[idx])
         mask = self._load_mask(mask_path)
 
         labels = self.data.labels.values[idx]
@@ -71,9 +66,9 @@ class GITractDataset(Dataset):
         mask = np.ascontiguousarray(mask)
 
         data = {
-            'image':   torch.from_numpy(image).float(),
-            'labels':  torch.from_numpy(labels),
-            'mask':    torch.from_numpy(mask)
-            }
+            "image": torch.from_numpy(image).float(),
+            "labels": torch.from_numpy(labels),
+            "mask": torch.from_numpy(mask),
+        }
 
         return data
