@@ -1,0 +1,7 @@
+defaults:
+  - gi_tract_seg.yaml
+net:
+  _target_: segmentation_models_pytorch.unetplusplus.UnetPlusPlus
+  encoder_name: timm-resnest50d
+  in_channels: 1
+  classes: 3

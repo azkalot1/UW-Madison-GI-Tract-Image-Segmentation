@@ -18,7 +18,7 @@ class GITractSegmentatonLitModule(LightningModule):
         lr_scheduler_monitor: Optional[str] = None,
     ):
         super().__init__()
-        self.save_hyperparameters(logger=False, ignore=["net"])
+        self.save_hyperparameters(logger=False)
         self.net = net
         self.criterion = criterion
         # we will only track dice during training
@@ -32,9 +32,6 @@ class GITractSegmentatonLitModule(LightningModule):
         self.test_dice = DiceMeter(
             mode="multilabel", class_names=["lb", "sb", "st"], prefix="test/dice"
         )
-
-    def on_epoch_end(self):
-        pass
 
     def forward(self, x: torch.Tensor):
         return self.net(x)
@@ -86,12 +83,12 @@ class GITractSegmentatonLitModule(LightningModule):
         optimizer_params = (
             {}
             if self.hparams.optimizer_params is None
-            else self.hparams.optimizer_params
+            else dict(self.hparams.optimizer_params[0])
         )
         lr_scheduler_params = (
             {}
             if self.hparams.lr_scheduler_params is None
-            else self.hparams.lr_scheduler_params
+            else dict(self.hparams.lr_scheduler_params[0])
         )
 
         optimizer = getattr(optim, self.hparams.optimizer_name)(

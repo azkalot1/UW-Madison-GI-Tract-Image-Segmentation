@@ -3,9 +3,10 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 
 
-def show_img(img, mask=None):
-    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
-    img = clahe.apply(img)
+def show_img(img, mask=None, apply_clahe=True):
+    if apply_clahe:
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+        img = clahe.apply(img)
     plt.imshow(img, cmap="bone")
 
     if mask is not None:

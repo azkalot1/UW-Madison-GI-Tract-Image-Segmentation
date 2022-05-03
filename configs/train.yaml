@@ -13,3 +13,4 @@ work_dir: ${hydra:runtime.cwd}
 print_config: True
 seed: 0
 name: "default"
+model_path: ${work_dir}/models/${name}.pt

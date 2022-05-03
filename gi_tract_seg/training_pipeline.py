@@ -6,8 +6,7 @@ from pytorch_lightning import (
     Trainer,
     seed_everything,
 )
-
-
+import torch
 from gi_tract_seg import utils
 
 log = utils.get_logger(__name__)
@@ -65,3 +64,6 @@ def train(config: DictConfig) -> Optional[float]:
     trainer.fit(model=model, datamodule=datamodule)
     log.info("Finalizing!")
     log.info(f"Best model ckpt at {trainer.checkpoint_callback.best_model_path}")
+    log.info("Loading best weights and saving the model!")
+    model.load_from_checkpoint(trainer.checkpoint_callback.best_model_path)
+    torch.save(model.net, config.model_path)
