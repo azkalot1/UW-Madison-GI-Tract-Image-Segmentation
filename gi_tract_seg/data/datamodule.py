@@ -51,6 +51,10 @@ class GITractDataModule(LightningDataModule):
         return self._val_augmentations
 
     def prepare_data(self):
+        pass
+
+    def setup(self, stage: Optional[str] = None):
+        log.info("Setting up data in datamodule")
         non_train_folds = [self.val_fold]
         self.val_data = self.data.loc[self.data["fold"] == self.val_fold, :]
 
@@ -59,9 +63,6 @@ class GITractDataModule(LightningDataModule):
             non_train_folds += [self.test_fold]
 
         self.train_data = self.data.loc[~self.data["fold"].isin(non_train_folds), :]
-
-    def setup(self, stage: Optional[str] = None):
-        log.info("Setting up data in datamodule")
         if not self.train_dataset and not self.val_dataset and not self.test_dataset:
             self.train_dataset = GITractDataset(
                 self.train_data,

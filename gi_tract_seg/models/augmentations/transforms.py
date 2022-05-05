@@ -1,14 +1,17 @@
 import albumentations as A
+import cv2
 
 
 def default_valid_transform(resize_size: int = 256):
-    return A.Compose([A.Resize(resize_size, resize_size)], p=1.0)
+    return A.Compose(
+        [A.Resize(resize_size, resize_size, interpolation=cv2.INTER_NEAREST)], p=1.0
+    )
 
 
 def light_training_transforms(resize_size: int = 256):
     return A.Compose(
         [
-            A.Resize(resize_size, resize_size),
+            A.Resize(resize_size, resize_size, interpolation=cv2.INTER_NEAREST),
             A.OneOf(
                 [
                     A.Transpose(),
@@ -26,7 +29,7 @@ def light_training_transforms(resize_size: int = 256):
 def medium_training_transforms(resize_size: int = 256):
     return A.Compose(
         [
-            A.Resize(resize_size, resize_size),
+            A.Resize(resize_size, resize_size, interpolation=cv2.INTER_NEAREST),
             A.OneOf(
                 [
                     A.Transpose(),
@@ -46,7 +49,7 @@ def heavy_training_transforms(resize_size: int = 256):
     return A.Compose(
         [
             A.RandomScale(scale_limit=0.25, p=0.5),
-            A.Resize(resize_size, resize_size),
+            A.Resize(resize_size, resize_size, interpolation=cv2.INTER_NEAREST),
             A.OneOf(
                 [
                     A.Transpose(),
