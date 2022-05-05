@@ -61,7 +61,7 @@ class SimpleInferencer(object):
                 ).astype("uint8")
                 rle_str = rle_encode(pred_arr)
                 encoded_masks.append(rle_str)
-            ids.extend([test_dataset.df.iloc[idx]["id"]] * 3)
+            ids.extend([test_dataset.data.iloc[idx]["id"]] * 3)
             classes.extend(PREDICTION_CLASSES)
             rles.extend(encoded_masks)
 
