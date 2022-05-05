@@ -32,3 +32,4 @@ scikit-learn>=1.0.2
 opencv-python
 albumentations
 segmentation-models-pytorch
+pytorch_toolbelt

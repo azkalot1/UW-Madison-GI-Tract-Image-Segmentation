@@ -110,10 +110,8 @@ def merge_ids(df):
     df = df.drop(columns=["segmentation", "class"])
     df = df.groupby(["id"]).head(1).reset_index(drop=True)
     df = df.merge(df2, on=["id"])
-    df["labels"] =\
-        df["segmentation"].apply(lambda x: 1 - pd.isna(x).astype(int))
-    df["empty"] =\
-        df["labels"].apply(lambda x: (np.array(x) == 0).all().astype(int))
+    df["labels"] = df["segmentation"].apply(lambda x: 1 - pd.isna(x).astype(int))
+    df["empty"] = df["labels"].apply(lambda x: (np.array(x) == 0).all().astype(int))
 
     return df
 

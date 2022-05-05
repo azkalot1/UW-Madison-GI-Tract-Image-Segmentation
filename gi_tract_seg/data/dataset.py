@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import cv2
 from os.path import join as path_join
+import albumentations as A
 
 
 class GITractDataset(Dataset):
@@ -13,7 +14,7 @@ class GITractDataset(Dataset):
         data: pd.DataFrame,
         images_path: str,
         masks_path: str,
-        transforms: Optional[int] = None,
+        transforms: Optional = None,
     ):
         self.data = data
         self.transforms = transforms
@@ -72,3 +73,30 @@ class GITractDataset(Dataset):
         }
 
         return data
+
+
+class GITractDatasetTest(Dataset):
+    def __init__(self, data, transform=A.Compose([A.Resize(256, 256)])):
+        self.data = data
+        self.image_path = data["f_path"]
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.data)
+
+    def _load_image(self, path):
+        img = cv2.imread(path, cv2.IMREAD_UNCHANGED)
+        img = img.astype("float32")  # original is uint16
+        min_val = img.min()
+        max_val = img.max()
+        img = (img - min_val) / (max_val - min_val)  # scale image to [0, 1]
+        img = np.expand_dims(img, -1)
+        return img
+
+    def __getitem__(self, idx):
+        image = self._load_image(self.image_path[idx])
+        augmented = self.transform(image=image)
+        image = augmented["image"]
+        image = image.transpose(2, 0, 1)
+        image = np.ascontiguousarray(image)
+        return {"image": torch.tensor(image, dtype=torch.float)}
