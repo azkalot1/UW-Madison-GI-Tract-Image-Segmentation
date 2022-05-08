@@ -22,6 +22,9 @@ class GITractDataModule(LightningDataModule):
         pin_memory: bool = True,
         train_augmentations=A.Compose([A.Resize(256, 256)]),
         val_augmentations=A.Compose([A.Resize(256, 256)]),
+        shuffle_train: bool = True,
+        keep_non_empty: bool = False,
+        apply_filters: bool = False,
     ):
         super().__init__()
 
@@ -41,6 +44,9 @@ class GITractDataModule(LightningDataModule):
         self.masks_path = masks_path
         self._train_augmentations = train_augmentations
         self._val_augmentations = val_augmentations
+        self.shuffle_train = shuffle_train
+        self.keep_non_empty = keep_non_empty
+        self.apply_filters = apply_filters
 
     @property
     def train_augmentations(self):
@@ -55,6 +61,8 @@ class GITractDataModule(LightningDataModule):
 
     def setup(self, stage: Optional[str] = None):
         log.info("Setting up data in datamodule")
+        if self.keep_non_empty:
+            self.data = self.data.loc[self.data["empty"] == 0]
         non_train_folds = [self.val_fold]
         self.val_data = self.data.loc[self.data["fold"] == self.val_fold, :]
 
@@ -63,15 +71,21 @@ class GITractDataModule(LightningDataModule):
             non_train_folds += [self.test_fold]
 
         self.train_data = self.data.loc[~self.data["fold"].isin(non_train_folds), :]
+
         if not self.train_dataset and not self.val_dataset and not self.test_dataset:
             self.train_dataset = GITractDataset(
                 self.train_data,
                 self.images_path,
                 self.masks_path,
                 self.train_augmentations,
+                self.apply_filters,
             )
             self.val_dataset = GITractDataset(
-                self.val_data, self.images_path, self.masks_path, self.val_augmentations
+                self.val_data,
+                self.images_path,
+                self.masks_path,
+                self.val_augmentations,
+                self.apply_filters,
             )
             if self.test_fold is not None:
                 self.test_dataset = GITractDataset(
@@ -79,6 +93,7 @@ class GITractDataModule(LightningDataModule):
                     self.images_path,
                     self.masks_path,
                     self.val_augmentations,
+                    self.apply_filters,
                 )
 
     def train_dataloader(self):
@@ -87,7 +102,7 @@ class GITractDataModule(LightningDataModule):
             batch_size=self.batch_size,
             num_workers=self.num_workers,
             pin_memory=self.pin_memory,
-            shuffle=True,
+            shuffle=self.shuffle_train,
         )
 
     def val_dataloader(self):

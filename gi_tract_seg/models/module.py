@@ -46,7 +46,13 @@ class GITractSegmentatonLitModule(LightningModule):
         loss, logits, gt_mask = self.step(batch)
         self.train_dice.update(logits, gt_mask)
         self.log(
-            "train/loss", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True
+            "train/loss",
+            loss,
+            on_step=False,
+            on_epoch=True,
+            prog_bar=True,
+            logger=True,
+            sync_dist=True,
         )
         return {"loss": loss}
 
@@ -54,14 +60,25 @@ class GITractSegmentatonLitModule(LightningModule):
         train_dice = self.train_dice.compute()
         self.train_dice.reset()
         self.log_dict(
-            train_dice, on_step=False, on_epoch=True, prog_bar=True, logger=True
+            train_dice,
+            on_step=False,
+            on_epoch=True,
+            prog_bar=True,
+            logger=True,
+            sync_dist=True,
         )
 
     def validation_step(self, batch: Any, batch_idx: int):
         loss, logits, gt_mask = self.step(batch)
         self.val_dice.update(logits, gt_mask)
         self.log(
-            "val/loss", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True
+            "val/loss",
+            loss,
+            on_step=False,
+            on_epoch=True,
+            prog_bar=True,
+            logger=True,
+            sync_dist=True,
         )
         return {"loss": loss}
 
@@ -69,7 +86,12 @@ class GITractSegmentatonLitModule(LightningModule):
         val_dice = self.val_dice.compute()
         self.val_dice.reset()
         self.log_dict(
-            val_dice, on_step=False, on_epoch=True, prog_bar=True, logger=True
+            val_dice,
+            on_step=False,
+            on_epoch=True,
+            prog_bar=True,
+            logger=True,
+            sync_dist=True,
         )
 
     def test_step(self, batch: Any, batch_idx: int):

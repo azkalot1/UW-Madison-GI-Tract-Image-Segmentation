@@ -67,3 +67,10 @@ def train(config: DictConfig) -> Optional[float]:
     log.info("Loading best weights and saving the model!")
     model.load_from_checkpoint(trainer.checkpoint_callback.best_model_path)
     torch.save(model.net, config.model_path)
+    optimized_metric = config.get("optimized_metric")
+    score = (
+        trainer.callback_metrics.get(optimized_metric)
+        if optimized_metric is not None
+        else -1
+    )
+    return score

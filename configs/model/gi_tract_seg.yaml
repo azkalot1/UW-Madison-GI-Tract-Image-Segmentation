@@ -15,9 +15,10 @@ net:
   classes: 3
 criterion:
   _target_: gi_tract_seg.models.losses.joint_loss.JointLoss
-  weights: [0.5, 0.5]
   first:
     _target_: segmentation_models_pytorch.losses.TverskyLoss
     mode: multilabel
   second:
     _target_: segmentation_models_pytorch.losses.SoftBCEWithLogitsLoss
+  weight_first: 0.5
+  weight_second: 0.5

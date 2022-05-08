@@ -16,8 +16,10 @@ class WeightedLoss(_Loss):
 
 
 class JointLoss(_Loss):
-    def __init__(self, weights, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__()
+        weights_keys = [x for x in kwargs.keys() if "weight_" in x]
+        weights = [kwargs.pop(x) for x in weights_keys]
         self.losses = []
         for idx, loss in enumerate(kwargs.values()):
             self.losses.append(WeightedLoss(loss, weights[idx]))

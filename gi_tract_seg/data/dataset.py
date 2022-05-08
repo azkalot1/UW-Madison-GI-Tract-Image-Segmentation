@@ -6,6 +6,7 @@ import pandas as pd
 import cv2
 from os.path import join as path_join
 import albumentations as A
+from skimage.filters import sobel, meijering
 
 
 class GITractDataset(Dataset):
@@ -15,11 +16,13 @@ class GITractDataset(Dataset):
         images_path: str,
         masks_path: str,
         transforms: Optional = None,
+        apply_filters: bool = False,
     ):
         self.data = data
         self.transforms = transforms
         self.images_path = images_path
         self.masks_path = masks_path
+        self.apply_filters = apply_filters
 
     def __len__(self):
         return self.data.shape[0]
@@ -30,7 +33,12 @@ class GITractDataset(Dataset):
         min_val = img.min()
         max_val = img.max()
         img = (img - min_val) / (max_val - min_val)  # scale image to [0, 1]
-        img = np.expand_dims(img, -1)
+        if self.apply_filters:
+            img_sobel = sobel(img)
+            img_meijering = meijering(img)
+            img = np.stack([img, img_sobel, img_meijering], -1)
+        else:
+            img = np.expand_dims(img, -1)
         return img
 
     def _load_mask(self, path):

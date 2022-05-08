@@ -9,8 +9,10 @@ defaults:
   - trainer: default.yaml
   - logger: neptune.yaml
   - log_dir: default.yaml
+  - hparams_search: null
 work_dir: ${hydra:runtime.cwd}
 print_config: True
+ignore_warnings: True
 seed: 0
 name: "default"
 model_path: ${work_dir}/models/${name}.pt
