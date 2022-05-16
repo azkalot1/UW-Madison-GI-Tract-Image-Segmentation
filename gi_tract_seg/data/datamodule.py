@@ -25,6 +25,9 @@ class GITractDataModule(LightningDataModule):
         shuffle_train: bool = True,
         keep_non_empty: bool = False,
         apply_filters: bool = False,
+        use_pseudo_3d: bool = False,
+        channels: Optional[int] = None,
+        stride: Optional[int] = None,
     ):
         super().__init__()
 
@@ -47,6 +50,9 @@ class GITractDataModule(LightningDataModule):
         self.shuffle_train = shuffle_train
         self.keep_non_empty = keep_non_empty
         self.apply_filters = apply_filters
+        self.use_pseudo_3d = use_pseudo_3d
+        self.channels = channels
+        self.stride = stride
 
     @property
     def train_augmentations(self):
@@ -61,8 +67,6 @@ class GITractDataModule(LightningDataModule):
 
     def setup(self, stage: Optional[str] = None):
         log.info("Setting up data in datamodule")
-        if self.keep_non_empty:
-            self.data = self.data.loc[self.data["empty"] == 0]
         non_train_folds = [self.val_fold]
         self.val_data = self.data.loc[self.data["fold"] == self.val_fold, :]
 
@@ -79,6 +83,10 @@ class GITractDataModule(LightningDataModule):
                 self.masks_path,
                 self.train_augmentations,
                 self.apply_filters,
+                self.use_pseudo_3d,
+                self.channels,
+                self.stride,
+                self.keep_non_empty,
             )
             self.val_dataset = GITractDataset(
                 self.val_data,
@@ -86,6 +94,10 @@ class GITractDataModule(LightningDataModule):
                 self.masks_path,
                 self.val_augmentations,
                 self.apply_filters,
+                self.use_pseudo_3d,
+                self.channels,
+                self.stride,
+                self.keep_non_empty,
             )
             if self.test_fold is not None:
                 self.test_dataset = GITractDataset(
@@ -94,6 +106,10 @@ class GITractDataModule(LightningDataModule):
                     self.masks_path,
                     self.val_augmentations,
                     self.apply_filters,
+                    self.use_pseudo_3d,
+                    self.channels,
+                    self.stride,
+                    self.keep_non_empty,
                 )
 
     def train_dataloader(self):

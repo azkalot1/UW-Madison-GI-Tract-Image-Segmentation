@@ -33,3 +33,5 @@ opencv-python
 albumentations
 segmentation-models-pytorch
 pytorch_toolbelt
+torch_optimizer
+pyarrow

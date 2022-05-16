@@ -15,3 +15,6 @@ val_augmentations:
 shuffle_train: True
 keep_non_empty: False
 apply_filters: False
+use_pseudo_3d: False
+channels: -1
+stride: -1

@@ -1,0 +1,15 @@
+defaults:
+  - gi_tract_seg.yaml
+criterion:
+  _target_: gi_tract_seg.models.losses.joint_loss.JointLoss
+  first:
+    _target_: segmentation_models_pytorch.losses.DiceLoss
+    mode: multilabel
+  second:
+    _target_: segmentation_models_pytorch.losses.SoftBCEWithLogitsLoss
+  third:
+    _target_: segmentation_models_pytorch.losses.LovaszLoss
+    mode: multilabel
+  weight_first: 0.8
+  weight_second: 0.1
+  weight_third: 0.1
