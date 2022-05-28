@@ -1,0 +1,10 @@
+defaults:
+  - gi_tract_seg.yaml
+net:
+  _target_: segmentation_models_pytorch.unet.Unet
+  encoder_name: resnet18
+  in_channels: 1
+  classes: 3
+  aux_params:
+    classes: 3
+aux_loss_multiplier: 1.0

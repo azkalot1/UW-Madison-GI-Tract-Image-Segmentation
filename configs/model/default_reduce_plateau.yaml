@@ -1,0 +1,6 @@
+defaults:
+  - gi_tract_seg.yaml
+lr_scheduler_name: ReduceLROnPlateau
+lr_scheduler_params:
+  - factor: 0.5
+  - patience: 10

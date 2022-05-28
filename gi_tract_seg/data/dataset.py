@@ -117,7 +117,7 @@ class GITractDataset(Dataset):
 
         data = {
             "image": torch.from_numpy(image).float(),
-            "labels": torch.from_numpy(labels),
+            "labels": torch.from_numpy(labels).float(),
             "mask": torch.from_numpy(mask),
         }
 

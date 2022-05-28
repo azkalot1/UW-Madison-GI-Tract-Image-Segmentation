@@ -8,7 +8,7 @@ pytorch-lightning>=1.5.10
 torchmetrics>=0.7.0
 
 # --------- hydra --------- #
-hydra-core>=1.1.0
+hydra-core==1.1.0
 hydra-colorlog>=1.1.0
 hydra-optuna-sweeper>=1.1.0
 
@@ -35,3 +35,4 @@ segmentation-models-pytorch
 pytorch_toolbelt
 torch_optimizer
 pyarrow
+protobuf==3.20.1
