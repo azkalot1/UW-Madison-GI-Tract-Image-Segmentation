@@ -4,6 +4,6 @@ min_epochs: 1
 max_epochs: 100
 num_sanity_val_steps: 0
 resume_from_checkpoint: null
-benchmark: True
+benchmark: False
 precision: 16
 deterministic: True

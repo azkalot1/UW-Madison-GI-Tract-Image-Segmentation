@@ -149,7 +149,7 @@ class DiceMeter(Metric):
         metric="dice",
         class_names=None,
         classes_of_interest=None,
-        nan_score_on_empty=True,
+        nan_score_on_empty=False,
         prefix: str = None,
         ignore_index=None,
         dist_sync_on_step=False,

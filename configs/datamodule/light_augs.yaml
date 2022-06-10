@@ -2,7 +2,9 @@ defaults:
   - gi_tract.yaml
 train_augmentations:
   _target_: gi_tract_seg.models.augmentations.transforms.light_training_transforms
-  resize_size: 256
+  size: [320, 384]
+  padding: True
 val_augmentations:
   _target_: gi_tract_seg.models.augmentations.transforms.default_valid_transform
-  resize_size: 256
+  size: [320, 384]
+  padding: True
