@@ -1,5 +1,10 @@
 defaults:
   - gi_tract_seg.yaml
+net:
+  _target_: segmentation_models_pytorch.DeepLabV3Plus
+  encoder_name: timm-resnest50d
+  in_channels: 1
+  classes: 3
 criterion:
   _target_: gi_tract_seg.models.losses.joint_loss.JointLoss
   first:
@@ -13,9 +18,11 @@ criterion:
   weight_first: 0.8
   weight_second: 0.1
   weight_third: 0.1
-net:
-  encoder_name: timm-resnest50d
 lr_scheduler_name: ReduceLROnPlateau
 lr_scheduler_params:
   - factor: 0.5
   - patience: 10
+optimizer_name: AdamP
+optimizer_params:
+  - lr: 0.00005
+  - weight_decay: 0.0001

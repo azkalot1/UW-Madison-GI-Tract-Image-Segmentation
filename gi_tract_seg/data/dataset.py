@@ -54,9 +54,8 @@ class GITractDataset(Dataset):
     def _load_image(self, path):
         img = cv2.imread(path, cv2.IMREAD_UNCHANGED)
         img = img.astype("float32")  # original is uint16
-        min_val = img.min()
         max_val = img.max()
-        img = (img - min_val) / (max_val - min_val)  # scale image to [0, 1]
+        img = img / max_val
         if self.apply_filters:
             img_sobel = sobel(img)
             img_meijering = meijering(img)
@@ -66,13 +65,8 @@ class GITractDataset(Dataset):
         return img
 
     def _load_images(self, paths):
-        img = [
-            cv2.imread(path, cv2.IMREAD_UNCHANGED).astype("float32") for path in paths
-        ]
-        img = np.stack(img, -1)
-        min_val = img.min()
-        max_val = img.max()
-        img = (img - min_val) / (max_val - min_val)  # scale image to [0, 1]
+        img = [self._load_image(path) for path in paths]
+        img = np.concatenate(img, -1)
         return img
 
     def _load_mask(self, path):

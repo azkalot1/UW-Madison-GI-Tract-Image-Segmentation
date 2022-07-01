@@ -1,12 +1,59 @@
 from typing import Optional
 import pandas as pd
+import numpy as np
 from pytorch_lightning import LightningDataModule
 from torch.utils.data import DataLoader, Dataset
 from gi_tract_seg.data.dataset import GITractDataset
 from gi_tract_seg import utils
 import albumentations as A
+from torch.utils.data import Sampler
+from typing import Sequence, Iterator
+import torch
 
 log = utils.get_logger(__name__)
+
+
+class SelectiveWeightenedBatchSampler(Sampler):
+    def __init__(
+        self,
+        batch_size: int,
+        weights: Sequence,
+        sampling_non_empty: float,
+        replacement: bool = True,
+        drop_last: bool = False,
+        generator=None,
+    ) -> None:
+        self.weights_non_empty = torch.as_tensor(weights, dtype=torch.double)
+        self.weights_random = torch.as_tensor(np.ones_like(weights), dtype=torch.double)
+        self.sampling_non_empty = torch.tensor(sampling_non_empty)
+
+        self.batch_size = batch_size
+        self.replacement = replacement
+        self.generator = generator
+        self.drop_last = drop_last
+
+    def __iter__(self) -> Iterator[int]:
+        for idx in range(len(self)):
+            if torch.rand(1)[0] <= self.sampling_non_empty:
+                rand_tensor = torch.multinomial(
+                    self.weights_non_empty,
+                    self.batch_size,
+                    self.replacement,
+                    generator=self.generator,
+                )
+            else:
+                rand_tensor = torch.multinomial(
+                    self.weights_random,
+                    self.batch_size,
+                    self.replacement,
+                    generator=self.generator,
+                )
+            yield rand_tensor.tolist()
+
+    def __len__(self) -> int:
+        return (
+            self.weights_non_empty.size()[0] + self.batch_size - 1
+        ) // self.batch_size
 
 
 class GITractDataModule(LightningDataModule):
@@ -76,6 +123,7 @@ class GITractDataModule(LightningDataModule):
 
         self.train_data = self.data.loc[~self.data["fold"].isin(non_train_folds), :]
 
+        log.info(f"Non train folds: {non_train_folds}")
         if not self.train_dataset and not self.val_dataset and not self.test_dataset:
             self.train_dataset = GITractDataset(
                 self.train_data,
@@ -113,12 +161,18 @@ class GITractDataModule(LightningDataModule):
                 )
 
     def train_dataloader(self):
+        batch_sampler = SelectiveWeightenedBatchSampler(
+            batch_size=self.batch_size,
+            weights=1 - self.train_dataset.data["empty"].values,
+            sampling_non_empty=0.8,
+        )
         return DataLoader(
             dataset=self.train_dataset,
-            batch_size=self.batch_size,
+            # batch_size=self.batch_size,
             num_workers=self.num_workers,
             pin_memory=self.pin_memory,
-            shuffle=self.shuffle_train,
+            # shuffle=self.shuffle_train,
+            batch_sampler=batch_sampler,
         )
 
     def val_dataloader(self):

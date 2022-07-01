@@ -1,18 +1,19 @@
 _target_: gi_tract_seg.models.module.GITractSegmentatonLitModule
 optimizer_name: AdamP
 optimizer_params:
-  - lr: 0.002
+  - lr: 0.0005
   - weight_decay: 0.0001
-lr_scheduler_name: CosineAnnealingWarmRestarts
+lr_scheduler_name: ReduceLROnPlateau
 lr_scheduler_params:
-  - T_0: 25
-  - eta_min: 0.000001
+  - factor: 0.5
+  - patience: 10
 lr_scheduler_monitor: 'val/loss'
 net:
   _target_: segmentation_models_pytorch.unet.Unet
   encoder_name: resnet18
   in_channels: 1
   classes: 3
+  encoder_weights: "imagenet"
 criterion:
   _target_: gi_tract_seg.models.losses.joint_loss.JointLoss
   first:
@@ -20,5 +21,5 @@ criterion:
     mode: multilabel
   second:
     _target_: segmentation_models_pytorch.losses.SoftBCEWithLogitsLoss
-  weight_first: 0.5
-  weight_second: 0.5
+  weight_first: 0.8
+  weight_second: 0.2

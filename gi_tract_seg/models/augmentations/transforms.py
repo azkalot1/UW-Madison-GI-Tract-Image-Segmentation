@@ -6,7 +6,13 @@ from typing import List
 def default_valid_transform(size: List[int] = [320, 384], padding=False):
     return A.Compose(
         [
-            A.PadIfNeeded(*size, value=0, mask_value=0, position="top_left")
+            A.PadIfNeeded(
+                *size,
+                border_mode=cv2.BORDER_CONSTANT,
+                value=0,
+                mask_value=0,
+                position="top_left"
+            )
             if padding
             else A.Resize(*size, interpolation=cv2.INTER_NEAREST)
         ]
@@ -16,7 +22,13 @@ def default_valid_transform(size: List[int] = [320, 384], padding=False):
 def light_training_transforms_resize(size: List[int] = [320, 384], padding=False):
     return A.Compose(
         [
-            A.PadIfNeeded(*size, value=0, mask_value=0, position="top_left")
+            A.PadIfNeeded(
+                *size,
+                border_mode=cv2.BORDER_CONSTANT,
+                value=0,
+                mask_value=0,
+                position="top_left"
+            )
             if padding
             else A.Resize(*size, interpolation=cv2.INTER_NEAREST),
             A.HorizontalFlip(p=0.5),
@@ -27,7 +39,13 @@ def light_training_transforms_resize(size: List[int] = [320, 384], padding=False
 def medium_training_transforms(size: List[int] = [320, 384], padding=False):
     return A.Compose(
         [
-            A.PadIfNeeded(*size, value=0, mask_value=0, position="top_left")
+            A.PadIfNeeded(
+                *size,
+                border_mode=cv2.BORDER_CONSTANT,
+                value=0,
+                mask_value=0,
+                position="top_left"
+            )
             if padding
             else A.Resize(*size, interpolation=cv2.INTER_NEAREST),
             A.HorizontalFlip(p=0.5),
@@ -39,21 +57,34 @@ def medium_training_transforms(size: List[int] = [320, 384], padding=False):
 def heavy_training_transforms(size: List[int] = [320, 384], padding=False):
     return A.Compose(
         [
-            A.RandomScale(scale_limit=0.25, p=0.5),
-            A.PadIfNeeded(*size, value=0, mask_value=0, position="top_left")
+            A.OneOf([A.HorizontalFlip(), A.VerticalFlip(), A.Rotate()], p=0.75),
+            A.RandomResizedCrop(*size, p=0.75),
+            A.PadIfNeeded(
+                *size,
+                border_mode=cv2.BORDER_CONSTANT,
+                value=0,
+                mask_value=0,
+                position="top_left"
+            )
             if padding
             else A.Resize(*size, interpolation=cv2.INTER_NEAREST),
-            A.HorizontalFlip(p=0.5),
             A.OneOf(
                 [
                     A.ElasticTransform(),
                     A.GridDistortion(),
                     A.OpticalDistortion(),
-                    A.ShiftScaleRotate(),
                 ],
                 p=0.75,
             ),
-            A.CoarseDropout(max_holes=16, max_height=16, max_width=16, p=0.5),
+            A.CoarseDropout(
+                max_holes=8,
+                max_height=size[0] // 20,
+                max_width=size[1] // 20,
+                min_holes=5,
+                fill_value=0,
+                mask_fill_value=0,
+                p=0.5,
+            ),
         ]
     )
 
@@ -61,7 +92,13 @@ def heavy_training_transforms(size: List[int] = [320, 384], padding=False):
 def kaggle_training_transforms(size: List[int] = [320, 384], padding=False):
     return A.Compose(
         [
-            A.PadIfNeeded(*size, value=0, mask_value=0, position="top_left")
+            A.PadIfNeeded(
+                *size,
+                border_mode=cv2.BORDER_CONSTANT,
+                value=0,
+                mask_value=0,
+                position="top_left"
+            )
             if padding
             else A.Resize(*size, interpolation=cv2.INTER_NEAREST),
             A.HorizontalFlip(p=0.5),
