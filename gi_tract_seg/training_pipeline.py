@@ -27,6 +27,11 @@ def train(config: DictConfig) -> Optional[float]:
     log.info(f"Instantiating model <{config.model._target_}>")
     model = hydra.utils.instantiate(config.model)
 
+    checkpoint_to_load = config.get("checkpoint")
+    if checkpoint_to_load is not None:
+        log.info(f"Loading weights from <{checkpoint_to_load}>")
+        model.load_from_checkpoint(checkpoint_to_load)
+
     # Init lightning callbacks
     callbacks = []
     if "callbacks" in config:

@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader, Dataset
 from gi_tract_seg.data.dataset import GITractDataset
 from gi_tract_seg import utils
 import albumentations as A
-from torch.utils.data import Sampler
+from torch.utils.data import Sampler, WeightedRandomSampler
 from typing import Sequence, Iterator
 import torch
 
@@ -161,18 +161,22 @@ class GITractDataModule(LightningDataModule):
                 )
 
     def train_dataloader(self):
-        batch_sampler = SelectiveWeightenedBatchSampler(
-            batch_size=self.batch_size,
-            weights=1 - self.train_dataset.data["empty"].values,
-            sampling_non_empty=0.8,
-        )
+        # batch_sampler = SelectiveWeightenedBatchSampler(
+        #     batch_size=self.batch_size,
+        #     weights=1 - self.train_dataset.data["empty"].values,
+        #     sampling_non_empty=0.8,
+        # )
+        weights = self.train_dataset.data["total_weight"].values
+        num_samples = len(weights)
+        sampler = WeightedRandomSampler(torch.DoubleTensor(weights), num_samples)
         return DataLoader(
             dataset=self.train_dataset,
-            # batch_size=self.batch_size,
+            batch_size=self.batch_size,
             num_workers=self.num_workers,
             pin_memory=self.pin_memory,
             # shuffle=self.shuffle_train,
-            batch_sampler=batch_sampler,
+            # batch_sampler=batch_sampler,
+            sampler=sampler,
         )
 
     def val_dataloader(self):

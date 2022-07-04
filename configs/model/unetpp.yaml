@@ -1,0 +1,4 @@
+defaults:
+  - gi_tract_seg.yaml
+net:
+  _target_: segmentation_models_pytorch.UnetPlusPlus
