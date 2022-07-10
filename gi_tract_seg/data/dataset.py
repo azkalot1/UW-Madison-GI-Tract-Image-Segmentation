@@ -1,6 +1,6 @@
 import torch
 from torch.utils.data import Dataset
-from typing import Optional
+from typing import Optional, Union
 import numpy as np
 import pandas as pd
 import cv2
@@ -20,7 +20,7 @@ class GITractDataset(Dataset):
         use_pseudo_3d: bool = False,
         channels: Optional[int] = None,
         stride: Optional[int] = None,
-        keep_non_empty: bool = True,
+        keep_non_empty: Union[bool, float] = True,
     ):
         self.data = data
         self.transforms = transforms
@@ -45,8 +45,14 @@ class GITractDataset(Dataset):
                 columns=[f"image_path_{i:02d}" for i in range(self.channels)]
             )
 
-        if self.keep_non_empty:
+        if self.keep_non_empty and type(self.keep_non_empty) is bool:
             self.data = self.data.loc[self.data["empty"] == 0]
+        elif self.keep_non_empty and type(self.keep_non_empty) is float:
+            data_non_empty = self.data.loc[data["empty"] == 0]
+            data_empty = self.data.loc[data["empty"] == 1].sample(
+                frac=self.keep_non_empty
+            )
+            self.data = pd.concat([data_non_empty, data_empty])
 
     def __len__(self):
         return self.data.shape[0]

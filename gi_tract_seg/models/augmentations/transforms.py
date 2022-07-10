@@ -19,7 +19,7 @@ def default_valid_transform(size: List[int] = [320, 384], padding=False):
     )
 
 
-def light_training_transforms_resize(size: List[int] = [320, 384], padding=False):
+def light_training_transforms(size: List[int] = [320, 384], padding=False):
     return A.Compose(
         [
             A.PadIfNeeded(
@@ -58,7 +58,15 @@ def heavy_training_transforms(size: List[int] = [320, 384], padding=False):
     return A.Compose(
         [
             A.OneOf([A.HorizontalFlip(), A.VerticalFlip(), A.Rotate()], p=0.75),
-            A.RandomResizedCrop(*size, p=0.75),
+            A.OneOf(
+                [
+                    A.RandomResizedCrop(*size, p=0.75),
+                    A.ShiftScaleRotate(
+                        shift_limit=0.0625, scale_limit=0.05, rotate_limit=10, p=0.5
+                    ),
+                ],
+                p=0.75,
+            ),
             A.PadIfNeeded(
                 *size,
                 border_mode=cv2.BORDER_CONSTANT,
