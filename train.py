@@ -6,6 +6,7 @@ from omegaconf import DictConfig
 def main(config: DictConfig):
     from gi_tract_seg import utils
     from gi_tract_seg.training_pipeline import train
+
     utils.extras(config)
     return train(config)
 

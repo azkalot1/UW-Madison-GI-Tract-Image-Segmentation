@@ -1,10 +1,12 @@
 from typing import Optional
+
+import albumentations as A
 import pandas as pd
 from pytorch_lightning import LightningDataModule
 from torch.utils.data import DataLoader, Dataset
-from gi_tract_seg.data.dataset import GITractDataset
+
 from gi_tract_seg import utils
-import albumentations as A
+from gi_tract_seg.data.dataset import GITractDataset
 
 log = utils.get_logger(__name__)
 

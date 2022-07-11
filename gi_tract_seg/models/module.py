@@ -1,10 +1,12 @@
-from typing import Any, List, Dict, Optional
+from typing import Any, Dict, List, Optional
+
 import torch
-from pytorch_lightning import LightningModule
-import torch_optimizer as optim
 import torch.optim.lr_scheduler as scheduler
-from gi_tract_seg.models.metrics import DiceMeter
+import torch_optimizer as optim
 import torchmetrics
+from pytorch_lightning import LightningModule
+
+from gi_tract_seg.models.metrics import DiceMeter
 
 
 class GITractSegmentatonLitModule(LightningModule):

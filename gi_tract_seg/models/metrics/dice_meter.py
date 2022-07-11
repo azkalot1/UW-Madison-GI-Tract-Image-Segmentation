@@ -1,10 +1,9 @@
-from torchmetrics import Metric
 from functools import partial
-from typing import Optional, Union, Any, Iterable
+from typing import Any, Iterable, Optional, Union
 
 import numpy as np
 import torch
-
+from torchmetrics import Metric
 
 BINARY_MODE = "binary"
 MULTICLASS_MODE = "multiclass"
@@ -122,7 +121,7 @@ def multilabel_dice_iou_score(
 ):
     # Source: pytorch_toolbelt
     ious = []
-    num_classes = y_pred.size(0)
+    num_classes = y_pred.shape[0]
 
     if classes_of_interest is None:
         classes_of_interest = range(num_classes)

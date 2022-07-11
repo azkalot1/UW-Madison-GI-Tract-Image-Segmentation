@@ -1,7 +1,8 @@
+import os
+
+import cv2
 import numpy as np
 import pandas as pd
-import cv2
-import os
 from sklearn.model_selection import StratifiedGroupKFold
 
 

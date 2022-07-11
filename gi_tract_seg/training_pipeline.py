@@ -1,12 +1,10 @@
 from typing import Optional
+
 import hydra
-from omegaconf import DictConfig
-from pytorch_lightning import (
-    LightningModule,
-    Trainer,
-    seed_everything,
-)
 import torch
+from omegaconf import DictConfig
+from pytorch_lightning import LightningModule, Trainer, seed_everything
+
 from gi_tract_seg import utils
 
 log = utils.get_logger(__name__)
