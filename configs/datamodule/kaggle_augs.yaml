@@ -5,6 +5,6 @@ train_augmentations:
   size: [320, 384]
   padding: True
 val_augmentations:
-  _target_: gi_tract_seg.models.augmentations.transforms.kaggle_training_transforms
+  _target_: gi_tract_seg.models.augmentations.transforms.default_valid_transform
   size: [320, 384]
   padding: True

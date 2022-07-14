@@ -129,8 +129,6 @@ class GITractDataModule(LightningDataModule):
                 batch_size=self.batch_size,
                 num_workers=self.num_workers,
                 pin_memory=self.pin_memory,
-                # shuffle=self.shuffle_train,
-                # batch_sampler=batch_sampler,
                 sampler=sampler,
             )
         else:
